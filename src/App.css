@@ -1,0 +1,9 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+
+
+.sp-wrapper , .sp-layout ,.sp-editor, .sp-code-editor{
+    height: 100% !important;
+}
