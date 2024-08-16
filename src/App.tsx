@@ -1,60 +1,80 @@
 import './App.css'
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { Sandpack, SandpackCodeEditor, SandpackLayout, SandpackProvider } from "@codesandbox/sandpack-react";
 import { amethyst } from "@codesandbox/sandpack-themes";
+import { apiRequest } from './api/fetchApiResponse';
 function App() {
-  const files ={
-'/fetchApiResponse.ts':`interface ApiRequestOptions {
-    headers?: Record<string, string>;
-    body?: any; 
-    params?: any;
-}
-
-const apiRequest = async (
-    url: string,
-    method: 'GET' | 'POST' | 'PUT' | 'DELETE' | 'PATCH' = 'GET',
-    { headers = {}, body = null, params = {} }: ApiRequestOptions = {}
-): Promise<any> => {
-    // Construct query parameters if provided
-    const queryString = new URLSearchParams(params).toString();
-    const fullUrl = queryString ? url+'?'+queryString : url;
-
-    // Configure request
-    const config: RequestInit = {
-        method,
-        headers: {
-            'Content-Type': 'application/json',
-            ...headers
-        }
-    };
-
-    // Add body if present (and not for GET/HEAD methods)
-    if (body && (method !== 'GET')) {
-        config.body = JSON.stringify(body);
+  const [getFetchData,setFetchData]=useState();
+  const getMovies = async () => {
+    const response = await apiRequest('https://covid-19-data.p.rapidapi.com/country/code?format=json&code=it','GET',
+      {
+        'x-rapidapi-key': 'c682d61f69mshabc2745d49ba6efp1c655cjsn79239aba6789',
+        'x-rapidapi-host': 'covid-19-data.p.rapidapi.com'
+      }
+    ).then((res)=>res).catch((err) =>err);
+    if(response){
+      setFetchData(response);
     }
-
-    try {
-        const response = await fetch(fullUrl, config);
-
-        if (!response.ok) {
-            throw new Error('Error: '+'response.status');
-        }
-
-        // Handle different content types if needed (e.g., JSON, text)
-        const contentType = response.headers.get('content-type');
-        if (contentType && contentType.includes('application/json')) {
-            return await response.json();
-        } else {
-            return await response.text();
-        }
-
-    } catch (error) {
-        console.error('API Error:', error);
-        throw error;
-    }
-};
-`,
   }
+  
+  useEffect(() => {
+    getMovies();
+  },[])
+  
+  const files ={
+  '/fetchApiResponse.ts':`interface ApiRequestOptions {
+      headers?: Record<string, string>;
+      body?: any; 
+      params?: any;
+  }
+
+  const apiRequest = async (
+      url: string,
+      method: 'GET' | 'POST' | 'PUT' | 'DELETE' | 'PATCH' = 'GET',
+      { headers = {}, body = null, params = {} }: ApiRequestOptions = {}
+  ): Promise<any> => {
+      // Construct query parameters if provided
+      const queryString = new URLSearchParams(params).toString();
+      const fullUrl = queryString ? url+'?'+queryString : url;
+
+      // Configure request
+      const config: RequestInit = {
+          method,
+          headers: {
+              'Content-Type': 'application/json',
+              ...headers
+          }
+      };
+
+      // Add body if present (and not for GET/HEAD methods)
+      if (body && (method !== 'GET')) {
+          config.body = JSON.stringify(body);
+      }
+
+      try {
+          const response = await fetch(fullUrl, config);
+
+          if (!response.ok) {
+              throw new Error('Error: '+'response.status');
+          }
+
+          // Handle different content types if needed (e.g., JSON, text)
+          const contentType = response.headers.get('content-type');
+          if (contentType && contentType.includes('application/json')) {
+              return await response.json();
+          } else {
+              return await response.text();
+          }
+
+      } catch (error) {
+          console.error('API Error:', error);
+          throw error;
+      }
+  };
+  `,
+  }
+
+
 
   return (
     <div className='min-h-screen dark:bg-indigo-950 bg-indigo-100'>

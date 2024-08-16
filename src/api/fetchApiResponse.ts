@@ -1,10 +1,10 @@
 interface ApiRequestOptions {
-    headers?: Record<string, string>;
+    headers?: any;
     body?: any; // Replace `any` with a more specific type if known
     params?: any;
 }
 
-const apiRequest = async (
+export const apiRequest = async (
     url: string,
     method: 'GET' | 'POST' | 'PUT' | 'DELETE' | 'PATCH' = 'GET',
     { headers = {}, body = null, params = {} }: ApiRequestOptions = {}
